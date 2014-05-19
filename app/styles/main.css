@@ -17,7 +17,7 @@ body {
     border-radius: 5px;
 }
 
-.node circle{
+.node rect{
     fill: steelblue;
     stroke: steelblue;
     stroke-width: 6px;

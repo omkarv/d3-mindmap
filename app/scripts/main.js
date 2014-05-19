@@ -40,9 +40,16 @@
      // console.log(d.parent.children.indexOf(d));
      var index = d.parent.children.indexOf(d);
      d.parent.children.splice(index,1);
-     update(root);//, root);
-
+     update(d);//, root);
   }
+
+  // var edit = function(d){
+  //   var newText = prompt("Enter the text here"); 
+  //   console.log(d);
+  //   var index = d.parent.children.indexOf(d);
+  //   d.parent.children[index].text = newText;
+  //   update(d);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+  // };
 
   // var createMindMap = function(x, y) {
   //   // console.log('creatingMindMap')
@@ -102,8 +109,14 @@
      .attr("transform", function(d) { 
       return "translate(" + source.y0 + "," + source.x0 + ")"; });//d.y + "," + d.x + ")"; });
 
-    nodeEnter.append("svg:circle")
-     .attr("r", 10)
+    nodeEnter.append("svg:rect") //circle")
+     //.attr("r", 10)
+     .attr("x", 10)
+     .attr("y", 10)
+     .attr("width", 50)
+     .attr("height", 30)
+     .attr("rx", 20)
+     .attr("ry", 20)
      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; })
      .on('click', click
       // console.log(d);
@@ -126,11 +139,23 @@
      .attr("x", function(d) { return d._children ? -8 : 8; })
      .attr("y", 3)
      .text(function(d) { return d.text; })
-     .style("fill-opacity", 1);
+     .style("fill-opacity", 1)
+     .on('click', function(d) {
+       d3.select(this)
+         .text(function(d){
+            // console.log(d);
+            var newText = prompt("Enter the text here") || d.text;     
+            d.text = newText;
+            return newText;
+          });
+      }, this);
 
     nodeEnter.transition()
       .duration(settings.duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+      .attr("transform", function(d) { 
+        var ypos = d.y - 10;
+        var xpos = d.x - 20;
+        return "translate(" + d.y + "," + d.x + ")"; })
           .style("opacity", 1)
         .select("circle")
           .style("fill", "lightsteelblue");
@@ -194,6 +219,9 @@
 
   //on canvas click (prevent this action being executed when on other nodes)
 
+  //to make a new node, drag from new node to required node
+
+  //need to create drag and drop functionality first
 
   //clicking on canvas creates a node (initialize with)
   //node class
