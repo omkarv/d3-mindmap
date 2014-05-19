@@ -1,0 +1,10 @@
+{
+  "name": "mindmaps",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.0.3",
+    "jquery": "~1.11.0",
+    "d3": "~3.4.6"
+  },
+  "devDependencies": {}
+}
