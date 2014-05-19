@@ -26,13 +26,40 @@
 
   // Toggle children on click.
 
-  var click = function(d) {
+  var click = function(d) {// root) {
       if (d3.event.defaultPrevented) return; // click suppressed
       d = toggleChildren(d);
-      update(d);
+      update(d);//, root); // make this specifc to that node
       // helpers.centerNode(d);
   };
 
+  var deleteNode = function(d){ // root) {
+     if (d==root) { //do not allow deletion of the root node
+      return;
+     }
+     // console.log(d.parent.children.indexOf(d));
+     var index = d.parent.children.indexOf(d);
+     d.parent.children.splice(index,1);
+     update(root);//, root);
+
+  }
+
+  // var createMindMap = function(x, y) {
+  //   // console.log('creatingMindMap')
+  //   var tree = d3.layout.tree()
+  //             .size([settings.w*0.5, settings.w*0.5]);
+
+  //   var diagonal = d3.svg.diagonal()
+  //     .projection(function(d) { return [d.y, d.x]; });
+
+  //   var localRoot = treeData[0];
+  //   // need to input x and y coordinates into the 
+  //   var coordinates = {
+  //     x0 : x,
+  //     y0 : y
+  //   }
+  //   update(coordinates, localRoot);
+  // };
 
   var tree = d3.layout.tree()
               .size([settings.w*0.5, settings.w*0.5]);
@@ -45,14 +72,19 @@
       .attr("width", width + margin.right + margin.left)
       .attr("height", height + margin.top + margin.bottom)
     .append("svg:g")
-      .attr("transform", "translate(40, 0)");
+      .attr("transform", "translate(40, 0)")
+  
+  // d3.select(".canvas").on('click', function() {
+  //     mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
+  //     createMindMap(mouse.x, mouse.y);
+  // });
 
   root = treeData[0];
   
   update(root);
 
   ///////////////////////////////////////////
-  function update(source) {
+  function update(source) {//, root) {
 
   // Compute the new tree layout.
     var nodes = tree.nodes(root).reverse(),
@@ -60,7 +92,6 @@
 
     // Normalize for fixed-depth.
     nodes.forEach(function(d) { d.y = d.depth * 180; });
-
     // Declare the nodesâ€¦
     var node = vis.selectAll("g.node")
      .data(nodes, function(d) { return d.id || (d.id = ++i); });
@@ -74,7 +105,16 @@
     nodeEnter.append("svg:circle")
      .attr("r", 10)
      .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; })
-     .on('click', click);;
+     .on('click', click
+      // console.log(d);
+      // mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
+     // click(d, root);
+     )
+     .on('dblclick', deleteNode//function(d) {
+      //console.log('in doubleclick', d);
+
+    //  deleteNode(d, root);
+     );
      // .append("ellipse")
      //  .attr("cx", 50)
      //  .attr("cy", 50)
@@ -107,7 +147,7 @@
       .remove();
 
     //Links between the nodes
-    var link = vis.selectAll("path.link")
+    var link = vis.selectAll("path.link") // will need specific ids /classes for each trees links
      .data(links, function(d) { return d.target.id; });
 
     // When the links enter
@@ -146,14 +186,13 @@
 
  //////////////////////event listeners//////////
 
-  var mouse = { x: settings.w, y: settings.h };
-
   // on canvas mousemove 
-  vis.on('mousemove', function() {
-    mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
-  });
+  // vis.on('mousemove', function() {
+  //   mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
+  //   console.log(mouse);
+  // });
 
-
+  //on canvas click (prevent this action being executed when on other nodes)
 
 
   //clicking on canvas creates a node (initialize with)
