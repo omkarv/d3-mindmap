@@ -373,10 +373,10 @@
      //.attr("r", 10)
      .attr("x", 0)
      .attr("y", -20)
-     .attr("width", 80)
+     .attr("width", 95)
      .attr("height", 50)
-     .attr("rx", 20)
-     .attr("ry", 20)
+     .attr("rx", 24)
+     .attr("ry", 24)
      .style("fill", function(d) { return color(d.depth);})//d._children ? "lightsteelblue" : "#fff"; })
      // .style("stroke", function(d) { return color(d.depth); })
      .on('click', click
@@ -399,7 +399,7 @@
       //     })
       //     .attr("id", function(d,i) { return 'a'+i; });
           // .attr("onClick", "change(this)");
-     .attr("x", function(d) { return  8; }) //d._children ? -8 :
+     .attr("x", function(d) { return  11; }) //d._children ? -8 :
      .attr("y", 10)
      .attr('width', 60)
      .text(function(d) { return d.text; })
@@ -420,7 +420,7 @@
             .attr('x', -10)
             .attr('y', -35 )
             .attr('height', 80)
-            .attr('width', 100)
+            .attr('width', 115)
             .attr("opacity", 0.2) // change this to zero to hide the target area
             .attr('pointer-events', 'mouseover')
             .on("mouseover", function(node) {

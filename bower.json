@@ -4,7 +4,9 @@
   "dependencies": {
     "bootstrap": "~3.0.3",
     "jquery": "~1.11.0",
-    "d3": "~3.4.6"
+    "d3": "~3.4.6",
+    "angular": "~1.2.16",
+    "angular-route": "~1.2.16"
   },
   "devDependencies": {}
 }
