@@ -2,6 +2,27 @@ var viewerWidth = 500;
 var viewerHeight = 500;
 var panSpeed = 200;
 
+function flatten(root) {
+  var nodes = [], i = 0;
+
+    function recurse(node) {
+    if (node.children) node.children.forEach(recurse);
+    if (!node.id) node.id = ++i;
+    // console.log(node)
+        delete node.parent;
+        delete node.x;
+        delete node.y;
+        delete node.x0;
+        delete node.y0;
+        delete node.id;
+        delete node.depth;
+        delete node.__proto__;
+    }
+  recurse(root);
+  // console.log(root);
+  return root;
+};
+
 var helpers ={
    centerNode : function(source) {
         scale = zoomListener.scale();

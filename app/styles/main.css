@@ -17,6 +17,14 @@ body {
     border-radius: 5px;
 }
 
+/*.btn-primary {
+    font-color: white;
+}*/
+.btn-large a{
+    margin-top: 20px;
+    color: white;
+}
+
 ul {
     text-align: center;
 }
@@ -27,24 +35,24 @@ ul {
 }
 
 .node text { 
-    font-family: 'Nunito', sans-serif; 
+    font-family: 'Nunito', 'Arial', sans-serif; 
     fill: white;
     font-size: 14px;
 }
 
 .new {
     position: relative;
-    float: left;   
+/*    float: left;  */ 
 }
 
 .stop {
     position: relative;
-    float: left;
+    /*float: left;*/
 }
 
 .save {
     position: relative;
-    float: right;
+    /*float: right;*/
 }
 
 .link {
@@ -60,7 +68,7 @@ ul {
 .templink {
     fill: none;
     stroke: steelblue;
-    stroke-width: 10px;
+ /*   stroke-width: 10px;*/
 }
 
 .ghostRect, .activeDrag .ghostRect{
@@ -85,7 +93,7 @@ ul {
     margin-top: 0;
     margin-bottom: 0;
     line-height: 40px;
-    padding-bottom: 19px;
+    padding-bottom: 15px;
 }
 
 /* Custom page footer */
@@ -103,11 +111,23 @@ ul {
 .jumbotron {
     text-align: center;
     border-bottom: 1px solid #e5e5e5;
+    background-color: white;
+    padding-top: 13px; 
 }
 
 .jumbotron .btn {
     font-size: 21px;
     padding: 14px 24px;
+}
+
+.form-control{
+    position: absolute;
+    margin-left: 425px;
+}
+
+#confirm {
+    position: absolute;
+    margin-left: 425px;
 }
 
 /* Supporting marketing content */

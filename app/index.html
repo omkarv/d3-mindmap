@@ -2,7 +2,7 @@
 <html class="no-js">
     <head>
         <meta charset="utf-8">
-        <title>hackathon 05 14</title>
+        <title>EverGraph</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/favicon.ico">
@@ -17,7 +17,7 @@
         <link rel="stylesheet" href="styles/main.css">
         <!-- endbuild -->
     </head>
-    <body>
+    <body ng-app= 'mindmap' ng-controller="MainController">
         <!--[if lt IE 10]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -27,17 +27,15 @@
             <div class="header">
                 <ul class="nav nav-pills pull-right">
                     <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">Login</a></li>
+                    <li><a href="/#Login">Login</a></li>
                     <li><a href="#">Contact</a></li>
                 </ul>
-                <h3 class="text-muted">by Omkar Vedpathak</h3>
+                <h3 class="text-muted">EverGraph</h3>
             </div>
         </div>
 
 
-        <div ng-view> </div>
-
-
+        <div ng-view ></div>
 
 
         <!-- build:js scripts/vendor.js -->
@@ -46,6 +44,8 @@
         <script src="../bower_components/angular/angular.js"></script>
         <script src="../bower_components/angular-route/angular-route.js"></script>
         <script src="../bower_components/d3/d3.js"></script>
+        <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+         <script src="../bower_components/angular-bootstrap/ui-bootstrap.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
@@ -76,9 +76,11 @@
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/testData.js"></script>
+        <script src="scripts/routing.js"></script>
         <script src="scripts/helpers.js"></script>
-        <script src="scripts/main.js"></script>
+        
+
 
         <!-- endbuild -->
-</body>
+    </body>
 </html>

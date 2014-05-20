@@ -15,5 +15,10 @@ module.exports = exports = app;
 app.get('/', function(req, res) {
   res.set('Content-Type', 'text/html');
   res.status(200).sendfile('../app/index.html');
-
 });
+
+app.post('/save', function(req, res) {
+  console.log(req.body);
+  res.status(200).send('Hello');
+})
+

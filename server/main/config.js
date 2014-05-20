@@ -5,7 +5,7 @@
     bodyParser  = require('body-parser'),
     middle      = require('./middleware');
 
-// mongoose.connect(process.env.DB_URL || 'mongodb://localhost/mindmap-angular');
+mongoose.connect(process.env.DB_URL || 'mongodb://localhost/server/db');
 /*
  * Include all your global env variables here.
 */
@@ -22,3 +22,23 @@ module.exports = exports = function (app, express, routers) {
   app.use(middle.logError);
   app.use(middle.handleError);
 };
+
+var db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function callback () {
+  console.log('yay');
+});
+// var bob = mongoose.model('test', { name: 'Bob'});
+// bob.save(function(err){
+//   if(err){
+//     console.log('friend');
+//   }
+// });
+
+var userSchema = mongoose.Schema({
+    username: String,
+    password: String,
+    mindmaps: Array
+});
+

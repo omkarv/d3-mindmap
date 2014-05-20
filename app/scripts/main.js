@@ -69,6 +69,7 @@
             }
             domNode = this;
             if (selectedNode) {
+                draggingNode.depth = selectedNode.depth + 1;
                 // now remove the element from the parent, and insert it into the new elements children
                 var index = draggingNode.parent.children.indexOf(draggingNode);
                 if (index > -1) {
@@ -88,6 +89,8 @@
                 }
                 // Make sure that the node being added to is expanded so user can see added node is correctly moved
                 helpers.expand(selectedNode);
+                // console.log(d3.select(this).style("fill", function(d) { return red;}));
+                
                 endDrag();
             } else {
                 endDrag();
@@ -111,10 +114,9 @@
   };
 
   function zoom() {
-    console.log('called');
+    // console.log('called');
     svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
   }
-
 
 // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
   var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
@@ -124,8 +126,6 @@
           return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
       });
   };
-
-
   
   function initiateDrag(d, domNode) {
         draggingNode = d;
@@ -206,7 +206,8 @@
     var parentNode = parent;
     var tree = d3.layout.tree()
               .size([settings.w*0.5, settings.w*0.5]);
-    var userText = prompt('Enter the desired text for your mindmap message');
+    var userText = prompt("Enter the new bubble's text");
+    // bubble.
     var data = 
     { 
       "text": userText,
@@ -299,7 +300,9 @@
         zoomListener.scale(scale);
         zoomListener.translate([x, y]);
     }
-
+  //////////////////////////////////////////////////////
+  /////// INITIAL CODE
+  ///////////////////////////////////////////////////////
   var draggingNode = null;
   var selectedNode = null;
 
@@ -314,8 +317,8 @@
       .attr("width", width + margin.right + margin.left)
       .attr("height", height + margin.top + margin.bottom)
     .append("svg:g")
-      .attr("transform", "translate(40, 0)");
-    // .call(zoomListener);
+      .attr("transform", "translate(40, 0)")
+    .call(zoomListener);
   
   // vis.append("button"//on('click', function() {
   // //     mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
@@ -327,27 +330,34 @@
                   d3.selectAll('g.node').on('click', function(d){
                     //d
                     createNode(d);
-                  })
-                });
-
-  var stopNode = d3.select("p.stop")
-                .on('click', function(){
-                  //set event listeneres on all nodes
-                  d3.selectAll('g.node').each(function() {
+                    d3.selectAll('g.node').each(function() {
                     d3.select(this).on('click', null);  //this should remove the event listener
                     d3.select(this).on("click",function() {
                        d3.event.stopPropagation(); 
                     });
+                    })
+
                   })
                 });
+
+  // var stopNode = d3.select("p.stop")
+  //               .on('click', function(){
+  //                 //set event listeneres on all nodes
+  //                 d3.selectAll('g.node').each(function() {
+  //                   d3.select(this).on('click', null);  //this should remove the event listener
+  //                   d3.select(this).on("click",function() {
+  //                      d3.event.stopPropagation(); 
+  //                   });
+  //                 })
+  //               });
   var svgGroup = vis.append("g");
 
-  root = treeData[0];
+  // root = treeData[0];
   
-  update(root);
-  centerNode(root);
-
-
+  // update(root);
+  // centerNode(root);
+  //////////////////////////////////////////
+  //UPDATING CODE//////////////
   ///////////////////////////////////////////
   function update(source) {//, root) {
 
@@ -387,27 +397,31 @@
      .on('dblclick', deleteNode//function(d) {
      );
 
+    // nodeEnter.append("foreignObject")
+    //       .attr("id", function(d,i) { return 'a'+i; })
+    //       .attr("width", 70)
+    //       .attr("height", 35)
+    //       .attr("y", '-300')
+    //         .append('form')
+    //         .append("input")
+    //         .attr("type", "submit")
+    //         .attr("placeholder", function(d) {
+    //           return d.text;
+    //         });
+      //     .attr("ng-hide", "true")
+
     nodeEnter.append("svg:text") // can use tspan to split this across several
-     // .append('label')
-     //      // .attr('for',function(d,i){ return 'a'+i; })
-     //      .text(function(d) { return d.text; })
-      // .append("input")
-      //     // .attr("checked", true)
-      //     .attr("type", "text")
-      //     .attr("placeholder", function(d) {
-      //       return d.text;
-      //     })
-      //     .attr("id", function(d,i) { return 'a'+i; });
-          // .attr("onClick", "change(this)");
      .attr("x", function(d) { return  11; }) //d._children ? -8 :
      .attr("y", 10)
      .attr('width', 60)
+     .attr('ng-click', 'clickHandler()')
      .text(function(d) { return d.text; })
      .style("fill-opacity", 1)
      .on('click', function(d) {
        d3.select(this)
          .text(function(d){
-              var newText = prompt("Enter the text here") || d.text;     
+              newText = $('.form-control').val() || d.text;  
+
               d.text = newText;
               return newText;
           });
@@ -440,7 +454,9 @@
         return "translate(" + d.y + "," + d.x + ")"; })
           .style("opacity", 1)
         .select("circle")
-          .style("fill", "lightsteelblue");
+          .style("fill", function(d) { return color(d.depth);});
+
+    node.style("fill", function(d) { return color(d.depth);});
 
     node.transition()
       .duration(settings.duration)
@@ -467,7 +483,7 @@
       .transition()
         .duration(settings.duration)
         .attr("d", diagonal)
-     .style("stroke", function(d) { return color(d.source.depth); });
+      .style("stroke", function(d) { return color(d.source.depth); });
 
     link.transition()
       .duration(settings.duration)
