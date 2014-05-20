@@ -4,12 +4,12 @@
   
   var settings = {
     w: window.innerWidth*0.5,
-    h: window.innerHeight*0.75,
-    duration: 500
+    h: window.innerHeight*0.5,
+    duration: 300
   };
 
- 
-  var panBoundary = 20;
+  var color = d3.scale.category10();
+  var panBoundary = 50;
 
   var margin = {top: 20, right: 120, bottom: 20, left: 120},
    width = 960 - margin.right - margin.left,
@@ -82,11 +82,12 @@
                     }
                 } else {
                     selectedNode.children = [];
+                    //if draggingNode has elements
+                    //if not 
                     selectedNode.children.push(draggingNode);
                 }
                 // Make sure that the node being added to is expanded so user can see added node is correctly moved
                 helpers.expand(selectedNode);
-               // sortTree();
                 endDrag();
             } else {
                 endDrag();
@@ -108,6 +109,15 @@
           draggingNode = null;
       }
   };
+
+  function zoom() {
+    console.log('called');
+    svgGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  }
+
+
+// define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
+  var zoomListener = d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoom);
 
   function sortTree() {
       tree.sort(function(a, b) {
@@ -192,6 +202,42 @@
       centerNode(d);
   };
 
+  var createNode = function(parent) {
+    var parentNode = parent;
+    var tree = d3.layout.tree()
+              .size([settings.w*0.5, settings.w*0.5]);
+    var userText = prompt('Enter the desired text for your mindmap message');
+    var data = 
+    { 
+      "text": userText,
+      "parent": parentNode,
+      "children": []
+    };
+    var parentLength;
+   // console.log(tree.nodes(data));
+   if(userText) {
+    if (typeof parentNode.children !== 'undefined' || typeof parentNode._children !== 'undefined') {
+        if (typeof parentNode.children !== 'undefined') {
+            parentNode.children.push(data);
+        } else {
+            parentNode._children.push(data);
+        }
+        // parentLength = parentNode.children.length;
+    } else {
+        parentNode.children = [];
+        // parentLength = parentNode.children.length;
+        parentNode.children.push(data);
+    }
+
+    if(parent.children) {
+      update(parent.children[parent.children.length-1])
+    }
+    helpers.expand(parent);
+    
+   }
+
+  };
+
   var deleteNode = function(d){ // root) {
      if (d==root) { //do not allow deletion of the root node
       return;
@@ -235,7 +281,8 @@
           .attr("d", d3.svg.diagonal())
           .attr('pointer-events', 'none');
 
-      link.attr("d", d3.svg.diagonal());
+      link.attr("d", d3.svg.diagonal())
+      .attr("class", "templink");
 
       link.exit().remove();
   };
@@ -267,12 +314,32 @@
       .attr("width", width + margin.right + margin.left)
       .attr("height", height + margin.top + margin.bottom)
     .append("svg:g")
-      .attr("transform", "translate(40, 0)")
+      .attr("transform", "translate(40, 0)");
+    // .call(zoomListener);
   
-  // d3.select(".canvas").on('click', function() {
-  //     mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
-  //     createMindMap(mouse.x, mouse.y);
+  // vis.append("button"//on('click', function() {
+  // //     mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
+  // //     createMindMap(mouse.x, mouse.y);
   // });
+  var newNode = d3.select("p.new")
+                .on('click', function(){
+                  //set event listeneres on all nodes
+                  d3.selectAll('g.node').on('click', function(d){
+                    //d
+                    createNode(d);
+                  })
+                });
+
+  var stopNode = d3.select("p.stop")
+                .on('click', function(){
+                  //set event listeneres on all nodes
+                  d3.selectAll('g.node').each(function() {
+                    d3.select(this).on('click', null);  //this should remove the event listener
+                    d3.select(this).on("click",function() {
+                       d3.event.stopPropagation(); 
+                    });
+                  })
+                });
   var svgGroup = vis.append("g");
 
   root = treeData[0];
@@ -298,6 +365,7 @@
     var nodeEnter = node.enter().append("svg:g")
      .call(dragListener)
      .attr("class", "node")
+     .style("fill", function(d) { return color(d.depth);})//d._children ? "lightsteelblue" : "#fff"; });
      .attr("transform", function(d) { 
       return "translate(" + source.y0 + "," + source.x0 + ")"; });//d.y + "," + d.x + ")"; });
 
@@ -309,25 +377,28 @@
      .attr("height", 50)
      .attr("rx", 20)
      .attr("ry", 20)
-     .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; })
+     .style("fill", function(d) { return color(d.depth);})//d._children ? "lightsteelblue" : "#fff"; })
+     // .style("stroke", function(d) { return color(d.depth); })
      .on('click', click
       // console.log(d);
       // mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
      // click(d, root);
      )
      .on('dblclick', deleteNode//function(d) {
-      //console.log('in doubleclick', d);
-
-    //  deleteNode(d, root);
      );
-     // .append("ellipse")
-     //  .attr("cx", 50)
-     //  .attr("cy", 50)
-     //  .attr("rx", 25)
-     //  .attr("ry", 10);
 
-
-    nodeEnter.append("svg:text")
+    nodeEnter.append("svg:text") // can use tspan to split this across several
+     // .append('label')
+     //      // .attr('for',function(d,i){ return 'a'+i; })
+     //      .text(function(d) { return d.text; })
+      // .append("input")
+      //     // .attr("checked", true)
+      //     .attr("type", "text")
+      //     .attr("placeholder", function(d) {
+      //       return d.text;
+      //     })
+      //     .attr("id", function(d,i) { return 'a'+i; });
+          // .attr("onClick", "change(this)");
      .attr("x", function(d) { return  8; }) //d._children ? -8 :
      .attr("y", 10)
      .attr('width', 60)
@@ -336,10 +407,9 @@
      .on('click', function(d) {
        d3.select(this)
          .text(function(d){
-            // console.log(d);
-            var newText = prompt("Enter the text here") || d.text;     
-            d.text = newText;
-            return newText;
+              var newText = prompt("Enter the text here") || d.text;     
+              d.text = newText;
+              return newText;
           });
       }, this);
 
@@ -352,7 +422,6 @@
             .attr('height', 80)
             .attr('width', 100)
             .attr("opacity", 0.2) // change this to zero to hide the target area
-        .style("fill", "red")
             .attr('pointer-events', 'mouseover')
             .on("mouseover", function(node) {
                 overCircle(node);
@@ -360,6 +429,7 @@
             .on("mouseout", function(node) {
                 outCircle(node);
             });
+
     // debugger;
     nodeEnter.transition()
        // .call(dragListener)
@@ -396,7 +466,8 @@
       })
       .transition()
         .duration(settings.duration)
-        .attr("d", diagonal);
+        .attr("d", diagonal)
+     .style("stroke", function(d) { return color(d.source.depth); });
 
     link.transition()
       .duration(settings.duration)
@@ -420,55 +491,6 @@
     });
 
   };
-
- //////////////////////event listeners//////////
-
-  // on canvas mousemove 
-  // vis.on('mousemove', function() {
-  //   mouse = { x: d3.mouse(this)[0], y: d3.mouse(this)[1]};
-  //   console.log(mouse);
-  // });
-
-  //on canvas click (prevent this action being executed when on other nodes)
-
-  //to make a new node, drag from new node to required node
-
-  //need to create drag and drop functionality first
-
-  //clicking on canvas creates a node (initialize with)
-  //node class
-    //properties
-      //children
-      //value / text
-      //color
-    //intialize
-      //at the point of creation, there will be a prompt to enter the textual
-      //contents of that node
-
-      //clicking on a node after it has been created allows us to see its children
-
-      //double tapping a node will cause a small x to appear on that node
-        //NE (not essential)//if the node has children an are you sure pop up will appear (after a while)
-
-      //dragging a node allows us to reposition a node
-
-    //delete
-      //removes the node 
-
-    //add child
-
-
-
-  //create a linked node
-
-  //this is a natural tree structure, so implement it as a tree
-
-
-  //a node can have a 
-
-
-
-
 
 
 //}).call(this);

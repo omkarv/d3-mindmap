@@ -1,30 +1,46 @@
 var treeData = [
     {
-      "text": "Top Level",
+      "text": "Life",
       "parent": "null",
       "children": [
         {
-          "text": "Level 2: A",
+          "text": "Animalia",
           "parent": "Top Level",
           "children": [
             {
-              "text": "Son of A",
-              "parent": "Level 2: A"
+              "text": "Vertebrates",
+              "parent": "Level 2: Animalia"
             },
             {
-              "text": "Daughter of A",
-              "parent": "Level 2: A"
+              "text": "Molluscs",
+              "parent": "Level 2: Animalia"
             },
             {
-              "text": "Gary",
-              "parent": "Level 2: A"
-            }
-          ]
+              "text": "Athropods",
+              "parent": "Level 2: Animalia"
+            },
+            {
+              "text": "Annelids",
+              "parent": "Level 2: Animalia"
+            },
+            {
+              "text": "Sponges",
+              "parent": "Level 2: Animalia"
+            }]
         },
         {
-          "text": "Level 2: B",
+          "text": "Fungi",
+          "parent": "Top Level"
+        },
+        {
+          "text": "Bacteria",
+          "parent": "Top Level"
+        },
+        {
+          "text": "Protista",
           "parent": "Top Level"
         }
       ]
     }
   ];
+
