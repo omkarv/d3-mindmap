@@ -24,13 +24,27 @@ body {
 }
 
 .node text { 
-    font: 12px sans-serif; 
+    font: 10px sans-serif; 
 }
 
 .link {
     fill: none;
     stroke: #ccc;
     stroke-width: 2px;
+}
+
+.ghostRect.show{
+      display:block;
+}
+
+.templink {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 10px;
+}
+
+.ghostRect, .activeDrag .ghostRect{
+   display: none;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
