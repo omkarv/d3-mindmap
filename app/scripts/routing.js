@@ -1,9 +1,62 @@
 angular.module('mindmap', ['ngRoute', 'ui.bootstrap'])
- .controller('MainController', function($scope, $route, $routeParams, $location) {
-     $scope.$route = $route;
-     $scope.$location = $location;
-     $scope.$routeParams = $routeParams;
- })
+.controller('MainController', function($scope, $route, $routeParams, $location,USER_ROLES, AuthService) {
+   $scope.$route = $route;
+   $scope.$location = $location;
+   $scope.$routeParams = $routeParams;
+   $scope.currentUser = null;
+   $scope.userRoles = USER_ROLES;
+   $scope.isAuthorized = AuthService.isAuthorized;
+   $scope.login = AuthService.login;
+})
+.constant('AUTH_EVENTS', {
+  loginSuccess: 'auth-login-success',
+  loginFailed: 'auth-login-failed',
+  logoutSuccess: 'auth-logout-success',
+  sessionTimeout: 'auth-session-timeout',
+  notAuthenticated: 'auth-not-authenticated',
+  notAuthorized: 'auth-not-authorized'
+})
+.constant('USER_ROLES', {
+  all: '*',
+  admin: 'admin',
+  editor: 'editor',
+  guest: 'guest'
+})
+.factory('AuthService', function ($http, Session, $location) {
+  return {
+    login: function (credentials) {
+      return $http
+        .post('/login', credentials)
+        .then(function (res) {
+          Session.create(res.id, res.userid, res.role);
+          $location.path('/'); // redirects the user to home
+        });
+    },
+    isAuthenticated: function () {
+      return !!Session.userId;
+    },
+    isAuthorized: function (authorizedRoles) {
+      if (!angular.isArray(authorizedRoles)) {
+        authorizedRoles = [authorizedRoles];
+      }
+      return (this.isAuthenticated() &&
+        authorizedRoles.indexOf(Session.userRole) !== -1);
+    }
+  };
+})
+.service('Session', function () {
+  this.create = function (sessionId, userId, userRole) {
+    this.id = sessionId;
+    this.userId = userId;
+    this.userRole = userRole;
+  };
+  this.destroy = function () {
+    this.id = null;
+    this.userId = null;
+    this.userRole = null;
+  };
+  return this;
+})
 .controller('demoController', function($scope, $route, $routeParams, $location, $http) {
      $scope.$route = $route;
      $scope.$location = $location;
@@ -18,14 +71,19 @@ angular.module('mindmap', ['ngRoute', 'ui.bootstrap'])
      };
      $scope.save = function() {
       var treeData = flatten(root);
-      console.log(treeData);
+      var payload = {
+        username: 'mario',
+        password: 'itsamemario',
+        mindmap: [treeData]
+      };
       $http({
         method: 'POST',
         url: 'http://localhost:9000' + '/' + 'save',
-        data: treeData
+        data: payload
       })
       .success(function(){
-        console.log('success');
+        // console.log('success');
+
       })
       .error(function(){
         console.log('Post FAILED, YOU LOSE');
@@ -39,6 +97,19 @@ angular.module('mindmap', ['ngRoute', 'ui.bootstrap'])
 
      };
  })
+.service('Session', function () {
+  this.create = function (sessionId, userId, userRole) {
+    this.id = sessionId;
+    this.userId = userId;
+    this.userRole = userRole;
+  };
+  this.destroy = function () {
+    this.id = null;
+    this.userId = null;
+    this.userRole = null;
+  };
+  return this;
+})
 .controller('createController', function($scope, $route, $routeParams, $location, $http) {
      $scope.$route = $route;
      $scope.$location = $location;
@@ -58,20 +129,16 @@ angular.module('mindmap', ['ngRoute', 'ui.bootstrap'])
       .error(function(){
         console.log('Post FAILED, YOU LOSE');
       });
-
+      // $scope.retrieve = function() {
+      //   $http
+      // }
       //if logged in, send tree data to server using $http
          //first ask for a name for the tree
          //note the username and session id
       //if not logged in, save the tree locally, redirect the user to the login page
-
      };
  })
-// .controller('AlertCtrl', function($scope) {
-//   $scope.alerts = [
-//     { type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
-//     { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
-//   ];
-
+// .controller('AlertDemoCtrl', function($scope) {
 //   $scope.closeAlert = function(index) {
 //     $scope.alerts.splice(index, 1);
 //   };
